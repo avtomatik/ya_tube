@@ -1,39 +1,49 @@
-
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Post
 from .serializers import PostSerializer
 
 
-@api_view(['GET', 'POST'])
-def api_posts(request):
-    if request.method == 'POST':
+class APIPost(APIView):
+    def get(self, request):
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    posts = Post.objects.all()
-    serializer = PostSerializer(posts, many=True)
-    return Response(serializer.data)
 
 
-@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
-def api_posts_detail(request, pk):
-    post = Post.objects.get(pk=pk)
-    if request.method == 'PUT' or request.method == 'PATCH':
+class APIPostDetail(APIView):
+    def get(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        serializer = PostSerializer(post)
+        return JsonResponse(data=serializer.data)
+
+    def put(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        serializer = PostSerializer(post, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+        post = Post.objects.get(pk=pk)
         serializer = PostSerializer(post, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'DELETE':
+
+    def delete(self, request, pk):
         post = Post.objects.get(pk=pk)
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    post = Post.objects.get(pk=pk)
-    serializer = PostSerializer(post)
-    return JsonResponse(data=serializer.data)
