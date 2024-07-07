@@ -1,8 +1,8 @@
 from django.urls import path
 
-from . import views
+from .views import APIPostDetail, APIPostList
 
 urlpatterns = [
-    path('api/v1/posts/', views.APIPost.as_view()),
-    path('api/v1/posts/<int:pk>/', views.APIPostDetail.as_view())
+    path('api/v1/posts/', APIPostList.as_view()),
+    path('api/v1/posts/<int:pk>/', APIPostDetail.as_view())
 ]
