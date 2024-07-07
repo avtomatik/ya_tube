@@ -1,8 +1,12 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import SimpleRouter
 
-from .views import APIPostDetail, APIPostList
+from .views import PostViewSet
+
+router = SimpleRouter()
+
+router.register('api/v1/posts', PostViewSet)
 
 urlpatterns = [
-    path('api/v1/posts/', APIPostList.as_view()),
-    path('api/v1/posts/<int:pk>/', APIPostDetail.as_view())
+    path('', include(router.urls))
 ]
