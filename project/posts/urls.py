@@ -3,5 +3,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('api/v1/posts/<int:pk>/', views.get_post, name='get_post'),
+    path('api/v1/posts/', views.api_posts, name='api_posts'),
 ]
