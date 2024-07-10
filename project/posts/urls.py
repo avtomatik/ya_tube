@@ -1,12 +1,13 @@
 from django.urls import include, path
-from rest_framework.routers import SimpleRouter
+from rest_framework import routers
 
-from .views import PostViewSet
+from .views import GroupViewSet, PostViewSet
 
-router = SimpleRouter()
-
+router = routers.DefaultRouter()
 router.register('api/v1/posts', PostViewSet)
+router.register('api/v1/posts', GroupViewSet)
+
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
 ]
