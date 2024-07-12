@@ -16,11 +16,7 @@ class PostSerializer(serializers.ModelSerializer):
         queryset=Group.objects.all(),
         required=False
     )
-    tag = serializers.SlugRelatedField(
-        slug_field='slug',
-        queryset=Tag.objects.prefetch_related('posts').all(),
-        required=False
-    )
+    tag = TagSerializer(many=True, required=False)
 
     class Meta:
         model = Post
