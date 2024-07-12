@@ -1,22 +1,39 @@
 from rest_framework import serializers
 
-from .models import Group, Post
+from .models import Group, Post, Tag, TagPost
 
 
-class GroupSerializer(serializers.ModelSerializer):
+class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Group
-        fields = ('id', 'title', 'slug')
+        model = Tag
+        fields = ('name',)
 
 
 class PostSerializer(serializers.ModelSerializer):
     group = serializers.SlugRelatedField(
-        required=False,
+        slug_field='slug',
         queryset=Group.objects.all(),
-        slug_field='slug'
+        required=False
+    )
+    tag = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Tag.objects.prefetch_related('posts').all(),
+        required=False
     )
 
     class Meta:
         model = Post
-        fields = ('id', 'text', 'author', 'image', 'pub_date', 'group')
+        fields = ('id', 'text', 'author', 'image', 'pub_date', 'group', 'tag')
+
+    def create(self, validated_data):
+        if 'tag' not in self.initial_data:
+            post = Post.objects.create(**validated_data)
+            return post
+
+        tag = validated_data.pop('tag')
+        post = Post.objects.create(**validated_data)
+        for tag_particular in tag:
+            current_tag, status = Tag.objects.get_or_create(**tag_particular)
+            TagPost.objects.create(tag=current_tag, post=post)
+        return post
