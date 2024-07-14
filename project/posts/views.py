@@ -1,14 +1,9 @@
 from rest_framework import viewsets
 
-from .models import Post, Tag
-from .serializers import PostSerializer, TagSerializer
+from .models import Post
+from .serializers import PostSerializer
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-
-
-class TagViewSet(viewsets.ModelViewSet):
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
