@@ -1,11 +1,10 @@
-from django.urls import include, path
-from rest_framework import routers
+from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
 
-from .views import PostViewSet
-
-router = routers.DefaultRouter()
-router.register('api/v1/posts', PostViewSet)
+from .views import api_posts, api_posts_detail
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/v1/posts/', api_posts),
+    path('api/v1/posts/<int:pk>/', api_posts_detail),
+    path('api/v1/api-token-auth/', obtain_auth_token),
 ]
